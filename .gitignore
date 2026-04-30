@@ -6,7 +6,8 @@ frontend/dist/
 backend/__pycache__/
 backend/*.pyc
 backend/uploads/
-backend/chroma_db/
+backend/data/
+backend/*.db
 
 # Virtual environment
 venv/
