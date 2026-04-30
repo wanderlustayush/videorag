@@ -1,19 +1,16 @@
-import whisper
+from faster_whisper import WhisperModel
 
-model = whisper.load_model("tiny")
+model = WhisperModel("tiny", device="cpu", compute_type="int8")
 
 def transcribe_video(video_path):
     print(f"Transcribing {video_path}...")
-    
-    result = model.transcribe(video_path)
-    
-    segments = []
-    for seg in result["segments"]:
-        segments.append({
-            "start": seg["start"],
-            "end": seg["end"],
-            "text": seg["text"].strip()
+    segments, _ = model.transcribe(video_path)
+    result = []
+    for seg in segments:
+        result.append({
+            "start": seg.start,
+            "end": seg.end,
+            "text": seg.text.strip()
         })
-    
-    print(f"Done! Got {len(segments)} segments.")
-    return segments
+    print(f"Done! Got {len(result)} segments.")
+    return result
