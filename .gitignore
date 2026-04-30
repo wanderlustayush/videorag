@@ -1,0 +1,29 @@
+# Frontend
+frontend/node_modules/
+frontend/dist/
+
+# Backend
+backend/__pycache__/
+backend/*.pyc
+backend/uploads/
+backend/chroma_db/
+
+# Virtual environment
+venv/
+
+# Environment variables
+.env
+.env.local
+backend/.env
+
+# Videos
+*.mp4
+*.mov
+*.avi
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log

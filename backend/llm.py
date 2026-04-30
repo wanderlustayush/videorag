@@ -1,0 +1,26 @@
+import os
+from groq import Groq
+from dotenv import load_dotenv
+
+load_dotenv()
+
+client = Groq(api_key=os.getenv("GROQ_API_KEY"))
+
+def get_answer(query, chunks):
+    context = "\n".join([c["text"] for c in chunks])
+    
+    response = client.chat.completions.create(
+        model="llama-3.3-70b-versatile",
+        messages=[
+            {
+                "role": "system",
+                "content": "You are a helpful assistant. Answer the user's question using only the transcript context provided. Be concise and clear."
+            },
+            {
+                "role": "user",
+                "content": f"Context:\n{context}\n\nQuestion: {query}"
+            }
+        ]
+    )
+    
+    return response.choices[0].message.content
