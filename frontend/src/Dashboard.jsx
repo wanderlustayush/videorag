@@ -156,7 +156,7 @@ export default function Dashboard() {
     const title = file.name.replace(/\.[^/.]+$/, "")
     setVideoTitle(title)
     const form = new FormData(); form.append("file", file)
-    const res = await axios.post("/api/upload", form)
+    const res = await axios.post(`${import.meta.env.VITE_API_URL}/upload`, form)
     setVideoId(res.data.video_id)
     addToHistory(res.data.video_id, title, url, null)
     setProcessing(false)
@@ -172,7 +172,7 @@ export default function Dashboard() {
     setVideoUrl(url)
     const title = ytId ? `YouTube · ${ytId}` : urlInput.slice(0, 48) + "..."
     setVideoTitle(title)
-    const res = await axios.post("/api/upload-url", { url: urlInput })
+    const res = await axios.post(`${import.meta.env.VITE_API_URL}/upload-url`, { url: urlInput })
     setVideoId(res.data.video_id)
     addToHistory(res.data.video_id, title, url, ytId)
     setProcessing(false)
@@ -186,7 +186,7 @@ export default function Dashboard() {
     const newMsgs = [...messages, { role: "user", text: userMsg }]
     setMessages(newMsgs)
     try {
-      const res = await axios.post("/api/ask", { query: userMsg, video_id: videoId })
+      const res = await axios.post(`${import.meta.env.VITE_API_URL}/ask`, { query: userMsg, video_id: videoId })
       const aiMsg = { role: "ai", text: res.data.answer, sources: res.data.sources }
       const finalMsgs = [...newMsgs, aiMsg]
       setMessages(finalMsgs); setSources(res.data.sources)
