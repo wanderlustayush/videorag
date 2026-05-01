@@ -10,8 +10,11 @@ from embedder import store_chunks
 from retriever import retrieve_chunks
 from llm import get_answer
 
-app = FastAPI()
+# Create required folders on startup
+os.makedirs("uploads", exist_ok=True)
+os.makedirs("data", exist_ok=True)
 
+app = FastAPI()
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
