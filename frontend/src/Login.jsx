@@ -212,7 +212,7 @@ export default function Login() {
           boxShadow: "0 32px 80px rgba(0,0,0,0.2)",
         }}>
           <video
-            src="/video.mp4"
+            src="/video_compressed.mp4"
             autoPlay
             loop
             muted

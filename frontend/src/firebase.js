@@ -3,7 +3,7 @@ import { getAuth, GoogleAuthProvider } from "firebase/auth"
 
 const firebaseConfig = {
   apiKey: "AIzaSyCRq6hIHknNSmQC0e-I0rFW0DjvFTBoOOQ",
-  authDomain: "videorag-852c2.firebaseapp.com",
+  authDomain: "videorag.vercel.app",
   projectId: "videorag-852c2",
   storageBucket: "videorag-852c2.firebasestorage.app",
   messagingSenderId: "208949760983",
