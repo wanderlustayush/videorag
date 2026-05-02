@@ -46,10 +46,16 @@ async def upload_from_url(req: URLRequest):
     video_id = str(uuid.uuid4())[:8]
     video_path = f"uploads/{video_id}.mp4"
     ydl_opts = {
-        "format": "best[ext=mp4]/best",
-        "outtmpl": video_path,
-        "quiet": True
-    }
+    "format": "best[ext=mp4]/best",
+    "outtmpl": video_path,
+    "quiet": True,
+    "no_warnings": True,
+    "extractor_args": {"youtube": {"skip": ["dash", "hls"]}},
+    "http_headers": {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "Accept-Language": "en-US,en;q=0.9",
+    },
+}
     with yt_dlp.YoutubeDL(ydl_opts) as ydl:
         ydl.download([req.url])
     segments = transcribe_video(video_path)
