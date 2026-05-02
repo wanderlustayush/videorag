@@ -106,6 +106,10 @@ export default function Dashboard() {
 
   useEffect(() => { chatEndRef.current?.scrollIntoView({ behavior: "smooth" }) }, [messages, loading])
 
+  useEffect(() => {
+  fetch(`${import.meta.env.VITE_API_URL}/`).catch(() => {})
+}, [])
+
   // ── History helpers — all now pass user.uid ──
   const addToHistory = (vidId, title, url, ytId) => {
     const entry = { id: Date.now(), videoId: vidId, title, url, ytId: ytId || null, timestamp: Date.now(), messages: [] }
@@ -179,23 +183,25 @@ export default function Dashboard() {
   }
 
   // ── Ask ──
-  const handleAsk = async () => {
-    if (!query.trim() || !videoId) return
-    const userMsg = query.trim()
-    setQuery(""); setLoading(true)
-    const newMsgs = [...messages, { role: "user", text: userMsg }]
-    setMessages(newMsgs)
-    try {
-      const res = await axios.post(`${import.meta.env.VITE_API_URL}/ask`, { query: userMsg, video_id: videoId })
-      const aiMsg = { role: "ai", text: res.data.answer, sources: res.data.sources }
-      const finalMsgs = [...newMsgs, aiMsg]
-      setMessages(finalMsgs); setSources(res.data.sources)
-      if (activeHistoryId) updateHistoryMessages(activeHistoryId, finalMsgs)
-    } catch {
-      setMessages([...newMsgs, { role: "ai", text: "Something went wrong. Please try again." }])
-    }
-    setLoading(false)
+const handleAsk = async () => {
+  if (!query.trim() || !videoId) return
+  const userMsg = query.trim()
+  setQuery(""); setLoading(true)
+  const newMsgs = [...messages, { role: "user", text: userMsg }]
+  setMessages(newMsgs)
+  try {
+    // Wake up Render before asking
+    await fetch(`${import.meta.env.VITE_API_URL}/`).catch(() => {})
+    const res = await axios.post(`${import.meta.env.VITE_API_URL}/ask`, { query: userMsg, video_id: videoId }, { timeout: 60000 })
+    const aiMsg = { role: "ai", text: res.data.answer, sources: res.data.sources }
+    const finalMsgs = [...newMsgs, aiMsg]
+    setMessages(finalMsgs); setSources(res.data.sources)
+    if (activeHistoryId) updateHistoryMessages(activeHistoryId, finalMsgs)
+  } catch {
+    setMessages([...newMsgs, { role: "ai", text: "Something went wrong. Please try again." }])
   }
+  setLoading(false)
+}
 
   const jumpToTime = (seconds) => {
     if (ytEmbedId && iframeRef.current) {
