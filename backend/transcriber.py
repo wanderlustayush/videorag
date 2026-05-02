@@ -18,13 +18,14 @@ def transcribe_video(video_path):
 def transcribe_youtube(video_id):
     from youtube_transcript_api import YouTubeTranscriptApi
     print(f"Fetching transcript for YouTube video {video_id}...")
-    transcript = YouTubeTranscriptApi.get_transcript(video_id)
+    ytt_api = YouTubeTranscriptApi()
+    fetched = ytt_api.fetch(video_id)
     result = []
-    for entry in transcript:
+    for entry in fetched:
         result.append({
-            "start": entry["start"],
-            "end": entry["start"] + entry["duration"],
-            "text": entry["text"].strip()
+            "start": entry.start,
+            "end": entry.start + entry.duration,
+            "text": entry.text.strip()
         })
     print(f"Done! Got {len(result)} segments.")
     return result
