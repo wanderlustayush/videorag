@@ -151,20 +151,28 @@ export default function Dashboard() {
   }
 
   // ── Upload ──
-  const handleUpload = async (e) => {
-    const file = e.target.files[0]
-    if (!file) return
-    setProcessing(true)
-    const url = URL.createObjectURL(file)
-    setVideoUrl(url); setYtEmbedId(null); setMessages([]); setSources([])
-    const title = file.name.replace(/\.[^/.]+$/, "")
-    setVideoTitle(title)
-    const form = new FormData(); form.append("file", file)
-    const res = await axios.post(`${import.meta.env.VITE_API_URL}/upload`, form)
+const handleUpload = async (e) => {
+  const file = e.target.files[0]
+  if (!file) return
+  setProcessing(true)
+  // Wake up Render before uploading
+  await fetch(`${import.meta.env.VITE_API_URL}/`).catch(() => {})
+  const url = URL.createObjectURL(file)
+  setVideoUrl(url); setYtEmbedId(null); setMessages([]); setSources([])
+  const title = file.name.replace(/\.[^/.]+$/, "")
+  setVideoTitle(title)
+  const form = new FormData(); form.append("file", file)
+  try {
+    const res = await axios.post(`${import.meta.env.VITE_API_URL}/upload`, form, { timeout: 120000 })
     setVideoId(res.data.video_id)
     addToHistory(res.data.video_id, title, url, null)
+  } catch (err) {
+    console.error("Upload error:", err)
+    setVideoUrl(null); setVideoTitle("")
+  } finally {
     setProcessing(false)
   }
+}
 
   const handleUrlUpload = async () => {
     if (!urlInput) return
