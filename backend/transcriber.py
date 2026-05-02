@@ -1,11 +1,10 @@
 import os
 import requests
-from faster_whisper import WhisperModel
-
-model = WhisperModel("tiny", device="cpu", compute_type="int8")
 
 def transcribe_video(video_path):
+    from faster_whisper import WhisperModel
     print(f"Transcribing {video_path}...")
+    model = WhisperModel("tiny", device="cpu", compute_type="int8")
     segments, _ = model.transcribe(video_path)
     result = []
     for seg in segments:
