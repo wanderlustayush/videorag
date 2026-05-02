@@ -1,3 +1,5 @@
+import os
+import requests
 from faster_whisper import WhisperModel
 
 model = WhisperModel("tiny", device="cpu", compute_type="int8")
@@ -16,16 +18,29 @@ def transcribe_video(video_path):
     return result
 
 def transcribe_youtube(video_id):
-    from youtube_transcript_api import YouTubeTranscriptApi
     print(f"Fetching transcript for YouTube video {video_id}...")
-    ytt_api = YouTubeTranscriptApi()
-    fetched = ytt_api.fetch(video_id)
+    api_key = os.getenv("RAPIDAPI_KEY")
+    url = "https://youtube-transcript3.p.rapidapi.com/api/transcript"
+    headers = {
+        "x-rapidapi-key": api_key,
+        "x-rapidapi-host": "youtube-transcript3.p.rapidapi.com",
+        "Content-Type": "application/json"
+    }
+    params = {"videoId": video_id}
+    response = requests.get(url, headers=headers, params=params)
+    data = response.json()
+
+    if not data.get("success") or "transcript" not in data:
+        raise Exception(f"No transcript found: {data}")
+
     result = []
-    for entry in fetched:
+    for entry in data["transcript"]:
+        start = float(entry.get("offset", 0))
+        duration = float(entry.get("duration", 0))
         result.append({
-            "start": entry.start,
-            "end": entry.start + entry.duration,
-            "text": entry.text.strip()
+            "start": start,
+            "end": start + duration,
+            "text": entry.get("text", "").strip()
         })
     print(f"Done! Got {len(result)} segments.")
     return result
