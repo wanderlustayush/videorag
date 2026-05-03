@@ -1,5 +1,6 @@
 import os
 import requests
+import gc
 
 def transcribe_video(video_path):
     from faster_whisper import WhisperModel
@@ -13,6 +14,8 @@ def transcribe_video(video_path):
             "end": seg.end,
             "text": seg.text.strip()
         })
+    del model
+    gc.collect()
     print(f"Done! Got {len(result)} segments.")
     return result
 
